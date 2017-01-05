@@ -39,6 +39,10 @@ typedef unsigned int DICE_TYPE;
 #define DD_WEST  3
 /* direction */
 
+#define DM_SLIDE  1
+#define DM_ROTATE 2
+/* what happens if the dice is pushed */
+
 DICE dice(int type, int top, int south);
 /* define a new dice */
 
@@ -49,5 +53,10 @@ int dice_south(DICE dice);
 int dice_north(DICE dice);
 int dice_west(DICE dice);
 int dice_east(DICE dice);
+
+int dice_rollable(DICE dice);
+int dice_pushable(DICE dice);
+int dice_push_motion(DICE dice);
+int dice_slide_inf(DICE dice);
 
 #endif /* __DICE_H__ */

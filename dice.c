@@ -74,6 +74,30 @@ int dice_east(DICE dice) {
     return 7 - dice_west(dice);
 }
 
+int dice_rollable(DICE dice) {
+    return dice_type(dice) != DT_STEAL;
+}
+
+int dice_pushable(DICE dice) {
+    return (dice_type(dice) != DT_STEAL) && (dice_type(dice) != DT_ROCK);
+}
+
+int dice_push_motion(DICE dice) {
+    if (dice_pushable(dice)) {
+        if (dice_type(dice) == DT_ROCK) {
+            return DM_ROTATE;
+        } else {
+            return DM_SLIDE;
+        }
+    }
+
+    return -1; // dummy
+}
+
+int dice_slide_inf(DICE dice) {
+    return dice_type(dice) == DT_ICE;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
