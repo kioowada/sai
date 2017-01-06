@@ -6,6 +6,9 @@
 
 #define INDEX(iboard, w, h) ((h) * ((iboard)->width + 2) + (w))
 
+////////////////////////////////////////////////////////////////////////////////////////////
+// Exported Definition
+////////////////////////////////////////////////////////////////////////////////////////////
 IBOARD board_new(BOARD_TYPE type, int width, int height, CELL* initializer) {
     IBOARD ret;
     int w, h;
@@ -49,6 +52,5 @@ void board_print_board(IBOARD iboard) {
         }
         printf("\n");
     }
-
 
 }
