@@ -46,6 +46,8 @@ typedef unsigned int DICE_TYPE;
 DICE dice(int type, int top, int south);
 /* define a new dice */
 
+int dice_is_valid_dice(DICE dice);
+
 DICE_TYPE dice_type(DICE dice);
 int dice_top(DICE dice);
 int dice_bottom(DICE dice);

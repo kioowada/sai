@@ -12,9 +12,13 @@ int _dice_is_valid_num(int num);
 ////////////////////////////////////////////////////////////////////////////////////////////
 DICE dice(int type, int top, int south) {
     if (_dice_is_valid_type(type) && _dice_is_valid_num(top) && _dice_is_valid_num(south)) {
-        return (type<<8) && (top<<4) && south;
+        return (type<<8) | (top<<4) | south;
     }
     return -1;
+}
+
+int dice_is_valid_dice(DICE dice) {
+    return _dice_is_valid_type(dice_type(dice)) && _dice_is_valid_num(dice_top(dice)) && _dice_is_valid_num(dice_south(dice));
 }
 
 /*
@@ -25,7 +29,7 @@ DICE dice(int type, int top, int south) {
  */
 
 DICE_TYPE dice_type(DICE dice) {
-    return dice>>8;
+    return (dice>>8)&0xf;
 }
 
 int dice_top(DICE dice) {
@@ -107,6 +111,6 @@ int _dice_is_valid_type(DICE_TYPE type) {
 }
 
 int _dice_is_valid_num(int num) {
-    return (num >= 1) && (num >= 6);
+    return (num >= 1) && (num <= 6);
 }
 
