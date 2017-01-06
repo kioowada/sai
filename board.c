@@ -48,7 +48,7 @@ void board_print_board(IBOARD iboard) {
     for (h = 0; h < iboard->height+2; h++) {
         for (w = 0; w < iboard->width+2; w++) {
             CELL cell = iboard->cell[INDEX(iboard, w, h)];
-            printf("(%2d,%2d,%2d) ", dice_type(cell), dice_top(cell), dice_south(cell));
+            printf("(%2d,%2d,%2d,%2d) ", dice_status(cell), dice_type(cell), dice_top(cell), dice_south(cell));
         }
         printf("\n");
     }

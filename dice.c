@@ -5,13 +5,19 @@
 // Internal Declaration
 ////////////////////////////////////////////////////////////////////////////////////////////
 int _dice_is_valid_type(DICE_TYPE type);
+int _dice_is_valid_status(DICE_STATUS status);
 int _dice_is_valid_num(int num);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
 DICE dice(int type, int top, int south) {
-    if (_dice_is_valid_type(type) && _dice_is_valid_num(top) && _dice_is_valid_num(south)) {
+    return dice_ws(type, top, south, DS_SOLID);
+}
+
+DICE dice_ws(int type, int top, int south, int status) {
+    if (_dice_is_valid_type(type) && _dice_is_valid_num(top)
+            && _dice_is_valid_num(south) && _dice_is_valid_status(status)) {
         return (type<<8) | (top<<4) | south;
     }
     return -1;
@@ -74,6 +80,10 @@ int dice_west(DICE dice) {
     return -1; // dummy
 }
 
+int dice_status(DICE dice) {
+    return (dice>>16)&0xf;
+}
+
 int dice_east(DICE dice) {
     return 7 - dice_west(dice);
 }
@@ -114,3 +124,6 @@ int _dice_is_valid_num(int num) {
     return (num >= 1) && (num <= 6);
 }
 
+int _dice_is_valid_status(DICE_STATUS status) {
+    return (status==DS_SOLID) || (status==DS_SUBMERGED) || (status==DS_GONE);
+}
