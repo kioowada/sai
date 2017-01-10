@@ -2,10 +2,14 @@
 #define __EVENT_H__
 
 typedef unsigned int EVENT;
-/* tttt tttt pppp pppp pppp pppp pppp pppp
+/* xccc tttt pppp pppp pppp pppp pppp pppp
  *
+ *  ccc:  usually 0. 1 when the event is triggered by the previous event
  *  tttt: event type
  *  pppp: parameter
+ *
+ *  NOTE: `c' is not used (implemented) now, because it is not needed unless
+ *  you want to show the replay of the game.
  */
 
 #define ET_PLAYER_MOVE       1
