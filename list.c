@@ -21,6 +21,10 @@ ELIST elist_new() {
     return elist;
 }
 
+void elist_free(ELIST elist) {
+    if(elist.list) { free(elist.list); }
+}
+
 int elist_append(EVENT event, IELIST ielist) {
     if (ielist->num == ielist->length) {
         if (_elist_reallocate(ielist, 2 * ielist->length) < 0) {

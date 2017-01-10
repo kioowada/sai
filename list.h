@@ -12,6 +12,7 @@ typedef struct {
 #define ELIST_DEFAULT_ALLOCATE_LENGTH 1024
 
 ELIST elist_new();
+void elist_free(ELIST elist);
 
 int elist_append(EVENT event, IELIST ielist);
 /* append num to the tail */
