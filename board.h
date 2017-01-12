@@ -17,6 +17,7 @@ typedef struct {
 IBOARD board_new(BOARD_TYPE type, int width, int height, CELL* initializer);
 
 int board_dice_exists(IBOARD iboard, int w, int h);
+CELL board_get_cell(IBOARD iboard, int w, int h);
 
 void board_print_board(IBOARD iboard);
 

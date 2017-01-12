@@ -18,6 +18,7 @@ typedef unsigned int EVENT;
  *
  * [parameter]
  *  xxxx xxxx wwww wwww hhhh hhhh
+ *  www/hhh: move distance (usually one)
  */
 #define ET_DICE_STATE_CHANGE 2
 /*

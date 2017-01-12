@@ -3,6 +3,11 @@ all:
 	make board.o
 	make event.o
 	make list.o
+	make game.o
+
+
+game.o: game.c game.h
+	gcc game.c -o game.o -c
 
 dice.o: dice.c dice.h
 	gcc dice.c -o dice.o -c
@@ -16,5 +21,5 @@ event.o: event.c event.h
 list.o: list.c list.h
 	gcc list.c -o list.o -c
 
-test: dice.o board.o test.c
-	gcc test.c dice.o board.o -o test
+test: game.o dice.o board.o list.o test.c
+	gcc test.c dice.o board.o game.o list.o -o test

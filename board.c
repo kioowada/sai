@@ -42,6 +42,10 @@ int board_dice_exists(IBOARD iboard, int w, int h) {
     return dice_is_valid_dice(iboard->cell[INDEX(iboard, w, h)]);
 }
 
+CELL board_get_cell(IBOARD iboard, int w, int h) {
+    return iboard->cell[INDEX(iboard, w, h)];
+}
+
 void board_print_board(IBOARD iboard) {
     int w, h;
 
