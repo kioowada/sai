@@ -11,16 +11,18 @@ int main(void) {
     IGAME igame;
 
     iboard = board_new(BT_NORMAL, 2, 3, initializer);
-    player.w = 1;
+    player.w = 2;
     player.h = 1;
 
     igame = game_new(iboard, player);
     game_print_status(igame);
+    game_commit_event(igame, event_move(-1, 0));
+    game_print_status(igame);
+    game_commit_event(igame, event_move(1, 0));
+    game_print_status(igame);
     game_commit_event(igame, event_move(0, 1));
     game_print_status(igame);
     game_commit_event(igame, event_move(0, -1));
-    game_print_status(igame);
-    game_commit_event(igame, event_move(0, 1));
     game_print_status(igame);
     
 

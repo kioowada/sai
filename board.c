@@ -15,6 +15,7 @@ CELL _board_get_subject_cell(IBOARD iboard, int w, int h, int dir);
 POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir);
 POINT _board_get_subject_point(IBOARD iboard, int w, int h, int dir);
 int _board_set_cell(IBOARD iboard, int w, int h, CELL cell);
+int _board_dir_to_dice_dir(int dir);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -94,6 +95,26 @@ int board_push_dice(IBOARD iboard, int w, int h, int dir) {
     return 0;
 }
 
+int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
+    CELL subject_cell = _board_get_subject_cell(iboard, w, h, dir);
+    DICE current_dice = (DICE)board_get_cell(iboard, w, h); // FIXME
+    POINT subject_point;
+
+    switch (subject_cell) {
+        case CELL_EMPTY:
+            subject_point = _board_get_subject_point(iboard, w, h, dir);
+            current_dice = dice_roll(current_dice, _board_dir_to_dice_dir(dir));
+            _board_set_cell(iboard, w, h, CELL_EMPTY);
+            _board_set_cell(iboard, subject_point.w, subject_point.h, (CELL)current_dice);
+            break;
+        case CELL_INVALID:
+            break;
+        default:
+            break;
+    }
+
+    return 0;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,4 +184,18 @@ CELL _board_get_subject_cell(IBOARD iboard, int w, int h, int dir) {
 int _board_set_cell(IBOARD iboard, int w, int h, CELL cell) {
     iboard->cell[INDEX(iboard, w, h)] = cell;
     return 0;
+}
+
+int _board_dir_to_dice_dir(int dir) {
+    switch (dir) {
+        case DIR_NORTH:
+            return DD_NORTH;
+        case DIR_SOUTH:
+            return DD_SOUTH;
+        case DIR_EAST:
+            return DD_EAST;
+        case DIR_WEST:
+            return DD_WEST;
+    }
+    return -1;
 }

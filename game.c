@@ -13,6 +13,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param);
 CELL _game_get_move_target_cell(IGAME igame, EP_MOVE param);
 int _game_move_player(IGAME igame, EP_MOVE param);
 int _game_push_dice(IGAME igame, EP_MOVE param);
+int _game_roll_dice(IGAME igame, EP_MOVE param);
 int _game_ep_move_to_dir(EP_MOVE param);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +71,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
     now_cell = _game_get_current_cell(igame);
     switch (now_cell) {
         case CELL_EMPTY:
-            // TODO just move on ground, or push dice
+            // just move on ground, or push dice
             target_cell = _game_get_move_target_cell(igame, param);
             switch (target_cell) {
                 case CELL_EMPTY:
@@ -88,6 +89,17 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
             break;
         default:
             // TODO just move on dice, or roll dice
+            target_cell = _game_get_move_target_cell(igame, param);
+            switch (target_cell) {
+                case CELL_EMPTY:
+                    _game_roll_dice(igame, param);
+                    _game_move_player(igame, param);
+                    break;
+                case CELL_INVALID:
+                    break;
+                default:
+                    _game_move_player(igame, param);
+            }
             break;
     }
 
@@ -129,4 +141,15 @@ int _game_ep_move_to_dir(EP_MOVE param) {
     }
 
     return -1;
+}
+
+int _game_roll_dice(IGAME igame, EP_MOVE param) {
+    int dir = _game_ep_move_to_dir(param);
+    int ret;
+    if (ret = board_roll_dice(igame->iboard, igame->player.w, igame->player.h, dir),
+            ret < 0) {
+        return ret;
+    } else {
+        return 0;
+    }
 }

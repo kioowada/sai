@@ -60,6 +60,8 @@ DICE dice(int type, int top, int south);
 DICE dice_ws(int type, int top, int south, int status);
 /* define a new dice */
 
+DICE dice_roll(DICE dice, int dir);
+
 int dice_is_valid_dice(DICE dice);
 
 DICE_TYPE dice_type(DICE dice);

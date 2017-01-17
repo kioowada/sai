@@ -23,6 +23,27 @@ DICE dice_ws(int type, int top, int south, int status) {
     return -1;
 }
 
+DICE dice_roll(DICE dice, int dir) {
+    DICE_TYPE type = dice_type(dice);
+
+    if (!dice_rollable(dice)) {
+        return -1;
+    }
+
+    int status = dice_status(dice);
+    switch (dir) {
+        case DD_SOUTH:
+            return dice_ws(type, dice_north(dice), dice_top(dice), status);
+        case DD_NORTH:
+            return dice_ws(type, dice_south(dice), dice_bottom(dice), status);
+        case DD_EAST:
+            return dice_ws(type, dice_west(dice), dice_south(dice), status);
+        case DD_WEST:
+            return dice_ws(type, dice_east(dice), dice_south(dice), status);
+    }
+    return -1;
+}
+
 int dice_is_valid_dice(DICE dice) {
     return _dice_is_valid_type(dice_type(dice)) && _dice_is_valid_num(dice_top(dice)) && _dice_is_valid_num(dice_south(dice));
 }
