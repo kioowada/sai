@@ -85,14 +85,14 @@ int board_push_dice(IBOARD iboard, int w, int h, int dir) {
             subject_point = _board_get_subject_point(iboard, w, h, dir);
             _board_set_cell(iboard, subject_point.w, subject_point.h, CELL_EMPTY);
             _board_set_cell(iboard, target_point.w, target_point.h, (CELL)subject_dice);
-            break;
+            return 0;
         case CELL_INVALID:
-            break;
+            return -1;
         default:
-            break;
+            return -1;
     }
 
-    return 0;
+    return -1;
 }
 
 int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
@@ -106,14 +106,14 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
             current_dice = dice_roll(current_dice, _board_dir_to_dice_dir(dir));
             _board_set_cell(iboard, w, h, CELL_EMPTY);
             _board_set_cell(iboard, subject_point.w, subject_point.h, (CELL)current_dice);
-            break;
+            return 0;
         case CELL_INVALID:
-            break;
+            return -1;
         default:
-            break;
+            return -1;
     }
 
-    return 0;
+    return -1;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition

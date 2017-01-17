@@ -37,9 +37,12 @@ int game_commit_event(IGAME igame, EVENT event) {
         case ET_PLAYER_MOVE:
             eparam = event_get_param(event);
             _game_commit_event_move(igame, eparam.param.move_param);
-            return _game_ignite_internal_event(igame);
+            break;
+        default:
+            return -1;
     }
-    return -1;
+    elist_append(event, &igame->elist);
+    return _game_ignite_internal_event(igame, event);
 }
 
 void game_print_status(IGAME igame) {
@@ -108,7 +111,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
     return 0;
 }
 
-int _game_ignite_internal_event(IGAME igame) {
+int _game_ignite_internal_event(IGAME igame, EVENT last_event) {
     // TODO
     return 0;
 }
