@@ -1,6 +1,9 @@
 #include "game.h"
+#include "dice.h"
 #include <stdlib.h>
+#include <stdio.h>
 
+#define INDEX(iboard, w, h) ((h) * ((iboard)->width + 2) + (w))
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Declaration
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -10,6 +13,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param);
 CELL _game_get_move_target_cell(IGAME igame, EP_MOVE param);
 int _game_move_player(IGAME igame, EP_MOVE param);
 int _game_push_dice(IGAME igame, EP_MOVE param);
+int _game_ep_move_to_dir(EP_MOVE param);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -33,6 +37,22 @@ int game_commit_event(IGAME igame, EVENT event) {
             return _game_commit_event_move(igame, eparam.param.move_param);
     }
     return -1;
+}
+
+void game_print_status(IGAME igame) {
+    int w, h, player_here;
+    IBOARD iboard = igame->iboard;
+    IPLAYER iplayer = &igame->player;
+
+    for (h = 0; h < iboard->height+2; h++) {
+        for (w = 0; w < iboard->width+2; w++) {
+            CELL cell = iboard->cell[INDEX(iboard, w, h)];
+            player_here = (iplayer->w == w) && (iplayer->h == h);
+            printf("(%s%2d,%2d,%2d,%2d) ", player_here?"P":" ", dice_status(cell), dice_type(cell), dice_top(cell), dice_south(cell));
+        }
+        printf("\n");
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +105,20 @@ int _game_move_player(IGAME igame, EP_MOVE param) {
 }
 
 int _game_push_dice(IGAME igame, EP_MOVE param) {
-    // TODO
-    return 0;
+    int dir = _game_ep_move_to_dir(param);
+    return board_push_dice(igame->iboard, igame->player.w, igame->player.h, dir);
+}
+
+int _game_ep_move_to_dir(EP_MOVE param) {
+    if (param.w == 1) {
+        return DIR_EAST;
+    } else if (param.w == -1) {
+        return DIR_WEST;
+    } else if (param.h == 1) {
+        return DIR_SOUTH;
+    } else if (param.h == -1) {
+        return DIR_NORTH;
+    }
+
+    return -1;
 }

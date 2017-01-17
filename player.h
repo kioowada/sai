@@ -5,6 +5,7 @@ typedef struct {
     int w, h;
 } PLAYER, *IPLAYER;
 
+#define POINT PLAYER
 
 #define PLAYER_MOVE_NORTH(player) (player).h--
 #define PLAYER_MOVE_SOUTH(player) (player).h++

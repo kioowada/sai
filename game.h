@@ -20,4 +20,6 @@ ELIST game_next_event_candidates(IGAME igame);
 
 int game_commit_event(IGAME igame, EVENT event);
 
+void game_print_status(IGAME igame);
+
 #endif /* __GAME_H__ */

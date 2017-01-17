@@ -6,18 +6,20 @@
 
 int main(void) {
     IBOARD iboard;
-    CELL initializer[] = {CELL_EMPTY, dice(DT_NORMAL, 6, 5), dice(DT_NORMAL, 2, 6), CELL_EMPTY};
+    CELL initializer[] = {CELL_EMPTY, dice(DT_NORMAL, 6, 5), dice(DT_NORMAL, 2, 6), CELL_EMPTY, CELL_EMPTY, CELL_EMPTY};
     PLAYER player;
     IGAME igame;
 
-    iboard = board_new(BT_NORMAL, 2, 2, initializer);
-    player.w = 2;
+    iboard = board_new(BT_NORMAL, 2, 3, initializer);
+    player.w = 1;
     player.h = 1;
 
     igame = game_new(iboard, player);
+    game_print_status(igame);
     game_commit_event(igame, event_move(0, 1));
+    game_print_status(igame);
+    
 
-    board_print_board(iboard);
     return 0;
 }
 

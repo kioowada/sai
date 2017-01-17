@@ -21,5 +21,5 @@ event.o: event.c event.h
 list.o: list.c list.h
 	gcc list.c -o list.o -c
 
-test: game.o dice.o board.o list.o test.c
-	gcc test.c dice.o board.o game.o list.o -o test
+test: game.o dice.o board.o list.o event.o test.c
+	gcc test.c event.o dice.o board.o game.o list.o -o test

@@ -1,10 +1,18 @@
 #include "board.h"
 #include "dice.h"
+#include "player.h" // for POINT
 
 #include <stdlib.h>
 #include <stdio.h>
 
 #define INDEX(iboard, w, h) ((h) * ((iboard)->width + 2) + (w))
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Exported Definition
+////////////////////////////////////////////////////////////////////////////////////////////
+CELL _board_get_target_cell(IBOARD iboard, int w, int h, int dir);
+POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir);
+int _board_set_cell(IBOARD iboard, int w, int h, CELL cell);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -57,4 +65,64 @@ void board_print_board(IBOARD iboard) {
         printf("\n");
     }
 
+}
+
+int board_push_dice(IBOARD iboard, int w, int h, int dir) {
+    CELL target_cell = _board_get_target_cell(iboard, w, h, dir);
+    DICE subject_dice = (DICE)board_get_cell(iboard, w, h); // FIXME
+    POINT target_point;
+    
+    switch (target_cell) {
+        case CELL_EMPTY:
+            target_point = _board_get_target_point(iboard, w, h, dir);
+            _board_set_cell(iboard, w, h, CELL_EMPTY);
+            _board_set_cell(iboard, target_point.w, target_point.h, (CELL)subject_dice);
+            break;
+        case CELL_INVALID:
+            break;
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Internal Definition
+////////////////////////////////////////////////////////////////////////////////////////////
+
+CELL _board_get_target_cell(IBOARD iboard, int w, int h, int dir) {
+    POINT target_point = _board_get_target_point(iboard, w, h, dir);
+    return board_get_cell(iboard, target_point.w, target_point.h);
+}
+
+POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir) {
+    POINT ret;
+    switch (dir) {
+        case DIR_NORTH:
+            h--;
+            break;
+        case DIR_SOUTH:
+            h++;
+            break;
+        case DIR_EAST:
+            w++;
+            break;
+        case DIR_WEST:
+            w--;
+            break;
+        default:
+            ret.w = -1;
+            ret.h = -1;
+            return ret;
+    }
+
+    ret.w = w;
+    ret.h = h;
+    return ret;
+}
+
+int _board_set_cell(IBOARD iboard, int w, int h, CELL cell) {
+    iboard->cell[INDEX(iboard, w, h)] = cell;
+    return 0;
 }
