@@ -15,6 +15,7 @@ int _game_move_player(IGAME igame, EP_MOVE param);
 int _game_push_dice(IGAME igame, EP_MOVE param);
 int _game_roll_dice(IGAME igame, EP_MOVE param);
 int _game_ep_move_to_dir(EP_MOVE param);
+int _game_ignite_internal_event(IGAME igame);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -35,7 +36,8 @@ int game_commit_event(IGAME igame, EVENT event) {
     switch (event_type(event)) {
         case ET_PLAYER_MOVE:
             eparam = event_get_param(event);
-            return _game_commit_event_move(igame, eparam.param.move_param);
+            _game_commit_event_move(igame, eparam.param.move_param);
+            return _game_ignite_internal_event(igame);
     }
     return -1;
 }
@@ -103,6 +105,11 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
             break;
     }
 
+    return 0;
+}
+
+int _game_ignite_internal_event(IGAME igame) {
+    // TODO
     return 0;
 }
 
