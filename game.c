@@ -80,6 +80,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
                     break;
                 default:
                     _game_push_dice(igame, param);
+                    _game_move_player(igame, param);
             }
             break;
         case CELL_INVALID:
@@ -99,6 +100,7 @@ CELL _game_get_move_target_cell(IGAME igame, EP_MOVE param) {
 }
 
 int _game_move_player(IGAME igame, EP_MOVE param) {
+    printf("moved: (%d,%d) + (%d,%d)\n", igame->player.w, igame->player.h, param.w, param.h);
     igame->player.w += param.w;
     igame->player.h += param.h;
     return 0;
@@ -106,7 +108,13 @@ int _game_move_player(IGAME igame, EP_MOVE param) {
 
 int _game_push_dice(IGAME igame, EP_MOVE param) {
     int dir = _game_ep_move_to_dir(param);
-    return board_push_dice(igame->iboard, igame->player.w, igame->player.h, dir);
+    int ret;
+    if (ret = board_push_dice(igame->iboard, igame->player.w, igame->player.h, dir),
+            ret < 0) {
+        return ret;
+    } else {
+        return 0;
+    }
 }
 
 int _game_ep_move_to_dir(EP_MOVE param) {

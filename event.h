@@ -1,6 +1,8 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
+#include <inttypes.h>
+
 typedef unsigned int EVENT;
 /* xccc tttt pppp pppp pppp pppp pppp pppp
  *
@@ -29,7 +31,7 @@ typedef unsigned int EVENT;
  */
 
 typedef struct {
-    unsigned char w, h;
+    int8_t w, h;
 } EP_MOVE;
 
 typedef struct {
@@ -44,7 +46,7 @@ typedef struct {
     } param;
 } EVENT_PARAM_RET;
 
-EVENT event_move(int w, int h);
+EVENT event_move(int8_t w, int8_t h);
 EVENT event_dice_state_change(int w, int h, int state);
 
 int event_type(EVENT event);

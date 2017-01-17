@@ -10,7 +10,7 @@ EVENT_PARAM_RET _event_get_param_move(EVENT event);
 // Exported Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-EVENT event_move(int w, int h) {
+EVENT event_move(int8_t w, int8_t h) {
     return (ET_PLAYER_MOVE<<24) | ((w&0xff)<<8) | (h&0xff);
 }
 
@@ -48,7 +48,7 @@ EVENT_PARAM_RET event_get_param(EVENT event) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 EVENT_PARAM_RET _event_get_param_move(EVENT event) {
-    int w, h;
+    int8_t w, h;
     EVENT_PARAM_RET ret;
 
     w = (event>>8) & 0xff;

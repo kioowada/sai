@@ -11,7 +11,9 @@
 // Exported Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
 CELL _board_get_target_cell(IBOARD iboard, int w, int h, int dir);
+CELL _board_get_subject_cell(IBOARD iboard, int w, int h, int dir);
 POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir);
+POINT _board_get_subject_point(IBOARD iboard, int w, int h, int dir);
 int _board_set_cell(IBOARD iboard, int w, int h, CELL cell);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +71,18 @@ void board_print_board(IBOARD iboard) {
 
 int board_push_dice(IBOARD iboard, int w, int h, int dir) {
     CELL target_cell = _board_get_target_cell(iboard, w, h, dir);
-    DICE subject_dice = (DICE)board_get_cell(iboard, w, h); // FIXME
+    DICE subject_dice = (DICE)_board_get_subject_cell(iboard, w, h, dir); // FIXME
     POINT target_point;
+    POINT subject_point;
+
+    printf("push dice: %d,%d -> %d\n", w, h, dir);
+    printf("target_cell = 0x%08x, subject_dice = 0x%08x\n", target_cell, subject_dice);
     
     switch (target_cell) {
         case CELL_EMPTY:
             target_point = _board_get_target_point(iboard, w, h, dir);
-            _board_set_cell(iboard, w, h, CELL_EMPTY);
+            subject_point = _board_get_subject_point(iboard, w, h, dir);
+            _board_set_cell(iboard, subject_point.w, subject_point.h, CELL_EMPTY);
             _board_set_cell(iboard, target_point.w, target_point.h, (CELL)subject_dice);
             break;
         case CELL_INVALID:
@@ -100,16 +107,16 @@ POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir) {
     POINT ret;
     switch (dir) {
         case DIR_NORTH:
-            h--;
+            h -= 2;
             break;
         case DIR_SOUTH:
-            h++;
+            h += 2;
             break;
         case DIR_EAST:
-            w++;
+            w += 2;
             break;
         case DIR_WEST:
-            w--;
+            w -= 2;
             break;
         default:
             ret.w = -1;
@@ -120,6 +127,37 @@ POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir) {
     ret.w = w;
     ret.h = h;
     return ret;
+}
+
+POINT _board_get_subject_point(IBOARD iboard, int w, int h, int dir) {
+    POINT ret;
+    switch (dir) {
+        case DIR_NORTH:
+            h -= 1;
+            break;
+        case DIR_SOUTH:
+            h += 1;
+            break;
+        case DIR_EAST:
+            w += 1;
+            break;
+        case DIR_WEST:
+            w -= 1;
+            break;
+        default:
+            ret.w = -1;
+            ret.h = -1;
+            return ret;
+    }
+
+    ret.w = w;
+    ret.h = h;
+    return ret;
+}
+
+CELL _board_get_subject_cell(IBOARD iboard, int w, int h, int dir) {
+    POINT subject = _board_get_subject_point(iboard, w, h, dir);
+    return board_get_cell(iboard, subject.w, subject.h);
 }
 
 int _board_set_cell(IBOARD iboard, int w, int h, CELL cell) {

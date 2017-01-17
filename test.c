@@ -18,6 +18,10 @@ int main(void) {
     game_print_status(igame);
     game_commit_event(igame, event_move(0, 1));
     game_print_status(igame);
+    game_commit_event(igame, event_move(0, -1));
+    game_print_status(igame);
+    game_commit_event(igame, event_move(0, 1));
+    game_print_status(igame);
     
 
     return 0;
