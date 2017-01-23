@@ -12,6 +12,7 @@
 // Internal Types
 ////////////////////////////////////////////////////////////////////////////////////////////
 typedef struct {
+    int dummy;
     int top;
     int length;
     POINT points[0];
@@ -35,6 +36,7 @@ void _board_state_operation_free(unsigned char *so);
 
 ICONNECTION _board_get_connection(IBOARD iboard, int w, int h);
 int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, unsigned char *mask);
+int _board_do_get_connection_impl(IBOARD iboard, int w, int h, int dw, int dh, int top, int count, unsigned char *mask);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -187,7 +189,7 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
                         printf(" check connection\n");
                         iconn = _board_get_connection(iboard, w, h);
                         printf(" iconn got:%p\n", iconn);
-                        printf("%d,%d\n", iconn->top, iconn->length);
+                        printf("top=%d,length=%d\n", iconn->top, iconn->length);
                         printf("%d,%d,%d,%d\n", iconn->points[0].w, iconn->points[0].h, iconn->points[1].w, iconn->points[1].h);
                         if ((iconn->top != 1) && (iconn->length >= iconn->top)) {
                             for (i = 0; i < iconn->length; i++) {
@@ -221,18 +223,23 @@ ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
 
     count = _board_do_get_connection(iboard, w, h, top, 0, mask);
 
-
-    iconn = (ICONNECTION)malloc(sizeof(CONNECTION) + count);
-    iconn->length = 2;
+    iconn = (ICONNECTION)malloc(sizeof(CONNECTION) + sizeof(POINT) * count);
+    printf("sizeof(CONNECTION)=%lu\n", sizeof(CONNECTION));
+    printf("malloced %lu\n", sizeof(CONNECTION) + sizeof(POINT) * count);
+    iconn->length = count;
     iconn->top = top;
     for (i = 0; i < 256; i++) {
         if (mask[i]) {
-        printf("[%d]", i);
+            printf("[%d,%d:%d]", count, mask[i], i);
             count--;
-            iconn->points[count].w = i % (iboard->width + 2);
-            iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
+            iconn->points[count].w = 181;
+            iconn->points[count].h = 222;
+//            iconn->points[count].w = i % (iboard->width + 2);
+//            iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
+            printf("->(%d,%d)@%p\n", iconn->points[count].w, iconn->points[count].h, &iconn->points[count]);
         }
     }
+    printf("length=%d,top=%d", iconn->length, iconn->top);
 
     free(mask);
     return iconn;
@@ -242,35 +249,52 @@ int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, un
     int dw, dh;
     CELL cell;
     DICE dice;
-    printf("  %d,%d,%d,%d\n", w, h, top, count);
+    printf("  w=%d,h=%d,top=%d,count=%d\n", w, h, top, count);
 
+    mask[INDEX(iboard, w, h)] = 1;
+
+    dw = 0;
     for (dh = -1; dh <= 1; dh += 2) {
-        for (dw = -1; dw <= 1; dw += 2) {
-            if (mask[INDEX(iboard, w + dw, h + dh)]) {
-                continue;
-            }
-            cell = board_get_cell(iboard, w + dw, h + dh);
-            printf("    %d,%d,%d,0x%08x\n", dw, dh, mask[INDEX(iboard, w+dw, h+dh)], cell);
-            switch (cell) {
-                case CELL_EMPTY:
-                    continue;
-                case CELL_INVALID:
-                    continue;
-                default:
-                    dice = (DICE)cell;
-                    if (!dice_is_valid_dice(dice)) {
-                        continue;
-                    }
+        count = _board_do_get_connection_impl(iboard, w, h, dw, dh, top, count, mask);
+    }
+    dh = 0;
+    for (dw = -1; dw <= 1; dw += 2) {
+        count = _board_do_get_connection_impl(iboard, w, h, dw, dh, top, count, mask);
+    }
 
-                    if (dice_top(dice) == top) {
-                        mask[INDEX(iboard, w + dw, h + dh)] = 1;
-                        _board_do_get_connection(iboard, w + dw, h + dh, top, count + 1, mask);
-                    } else {
-                        // no connection
-                        continue;
-                    }
+    return count;
+}
+
+int _board_do_get_connection_impl(IBOARD iboard, int w, int h, int dw, int dh, int top, int count, unsigned char *mask) {
+    CELL cell;
+    DICE dice;
+    printf("   (%d,%d) mask=%d, cell=0x%08x\n", w + dw, h+ dh, mask[INDEX(iboard, w+dw,h+dh)], board_get_cell(iboard, w+dw, h+dh));
+    if (mask[INDEX(iboard, w + dw, h + dh)]) {
+        printf("    skip because masked\n");
+        return count;
+    }
+    cell = board_get_cell(iboard, w + dw, h + dh);
+    switch (cell) {
+        case CELL_EMPTY:
+            printf("    skip because empty\n");
+            return count;
+        case CELL_INVALID:
+            printf("    skip because invalid\n");
+            return count;
+        default:
+            dice = (DICE)cell;
+            if (!dice_is_valid_dice(dice)) {
+                printf("    skip because invalid dice\n");
+                return count;
             }
-        }
+
+            if (dice_top(dice) == top) {
+                mask[INDEX(iboard, w + dw, h + dh)] = 1;
+                return _board_do_get_connection(iboard, w + dw, h + dh, top, count + 1, mask);
+            } else {
+                // no connection
+                return count;
+            }
     }
 
     return count;
