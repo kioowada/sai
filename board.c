@@ -34,6 +34,7 @@ int _board_state_operation_change(IBOARD iboard, unsigned char *so, int w, int h
 void _board_state_operation_free(unsigned char *so);
 
 ICONNECTION _board_get_connection(IBOARD iboard, int w, int h);
+int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, unsigned char *mask);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -154,13 +155,16 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
             // if cell == empty, skip
             // if cell == existing dice, check connection
             // if cell == vanishing dice, goto next state
+            printf("%d,%d,0x%08x\n", w, h, board_get_cell(iboard, w, h));
 
             if (_board_state_operation_is_changed(iboard, so, w, h)) {
+                printf(" do nothing because already changed\n");
                 continue;
             }
 
             current_cell = board_get_cell(iboard, w, h);
             if (current_cell == CELL_EMPTY) {
+                printf(" skip because empty\n");
                 continue;
             }
 
@@ -180,7 +184,11 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
                         break;
                     case DS_SOLID:
                         // check connection
+                        printf(" check connection\n");
                         iconn = _board_get_connection(iboard, w, h);
+                        printf(" iconn got:%p\n", iconn);
+                        printf("%d,%d\n", iconn->top, iconn->length);
+                        printf("%d,%d,%d,%d\n", iconn->points[0].w, iconn->points[0].h, iconn->points[1].w, iconn->points[1].h);
                         if ((iconn->top != 1) && (iconn->length >= iconn->top)) {
                             for (i = 0; i < iconn->length; i++) {
                                 elist_append(event_dice_state_change(iconn->points[i].w, iconn->points[i].h, DS_SUBMERGED), &elist);
@@ -203,7 +211,69 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
-    return NULL;
+    int count, ww, hh, i, top;
+    unsigned char *mask; // TODO
+    ICONNECTION iconn;
+
+    mask = (unsigned char*)malloc(256);
+    memset(mask, 0, 256); // TODO
+    top = dice_top((DICE)board_get_cell(iboard, w, h));
+
+    count = _board_do_get_connection(iboard, w, h, top, 0, mask);
+
+
+    iconn = (ICONNECTION)malloc(sizeof(CONNECTION) + count);
+    iconn->length = 2;
+    iconn->top = top;
+    for (i = 0; i < 256; i++) {
+        if (mask[i]) {
+        printf("[%d]", i);
+            count--;
+            iconn->points[count].w = i % (iboard->width + 2);
+            iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
+        }
+    }
+
+    free(mask);
+    return iconn;
+}
+
+int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, unsigned char *mask) {
+    int dw, dh;
+    CELL cell;
+    DICE dice;
+    printf("  %d,%d,%d,%d\n", w, h, top, count);
+
+    for (dh = -1; dh <= 1; dh += 2) {
+        for (dw = -1; dw <= 1; dw += 2) {
+            if (mask[INDEX(iboard, w + dw, h + dh)]) {
+                continue;
+            }
+            cell = board_get_cell(iboard, w + dw, h + dh);
+            printf("    %d,%d,%d,0x%08x\n", dw, dh, mask[INDEX(iboard, w+dw, h+dh)], cell);
+            switch (cell) {
+                case CELL_EMPTY:
+                    continue;
+                case CELL_INVALID:
+                    continue;
+                default:
+                    dice = (DICE)cell;
+                    if (!dice_is_valid_dice(dice)) {
+                        continue;
+                    }
+
+                    if (dice_top(dice) == top) {
+                        mask[INDEX(iboard, w + dw, h + dh)] = 1;
+                        _board_do_get_connection(iboard, w + dw, h + dh, top, count + 1, mask);
+                    } else {
+                        // no connection
+                        continue;
+                    }
+            }
+        }
+    }
+
+    return count;
 }
 
 unsigned char* _board_state_operation_new(IBOARD iboard) {

@@ -40,6 +40,16 @@ EVENT elist_nth(unsigned int n, IELIST ielist) {
     return ielist->list[n];
 }
 
+void elist_print(ELIST elist) {
+    int i;
+    EVENT event;
+
+    for (i = 0; i < elist.num; i++) {
+        event = elist_nth(i, &elist);
+        printf("%d: 0x%08x\n", i, event);
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition
 ////////////////////////////////////////////////////////////////////////////////////////////

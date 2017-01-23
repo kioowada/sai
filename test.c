@@ -4,6 +4,26 @@
 #include "game.h"
 #include "player.h"
 
+
+int main(void) {
+    IBOARD iboard;
+    CELL initializer[] = {CELL_EMPTY, dice(DT_NORMAL, 2, 1), CELL_EMPTY, dice(DT_NORMAL, 2, 1), CELL_EMPTY, CELL_EMPTY};
+    PLAYER player;
+    IGAME igame;
+    ELIST elist;
+
+    iboard = board_new(BT_NORMAL, 2, 3, initializer);
+    player.w = 2;
+    player.h = 1;
+
+    igame = game_new(iboard, player);
+    game_print_status(igame);
+    elist = board_get_internal_events(iboard, 0);
+    
+
+    return 0;
+}
+/*
 int main(void) {
     IBOARD iboard;
     CELL initializer[] = {CELL_EMPTY, dice(DT_NORMAL, 6, 5), dice(DT_NORMAL, 2, 6), CELL_EMPTY, CELL_EMPTY, CELL_EMPTY};
@@ -28,6 +48,7 @@ int main(void) {
 
     return 0;
 }
+*/
 
 /*
  * NULL 6
