@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 EVENT_PARAM_RET _event_get_param_dice_state_change(EVENT event);
 EVENT_PARAM_RET _event_get_param_move(EVENT event);
+EVENT_PARAM_RET _event_get_param_dice_vanish(EVENT event);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -16,6 +17,10 @@ EVENT event_move(int8_t w, int8_t h) {
 
 EVENT event_dice_state_change(int w, int h, int state) {
     return (ET_DICE_STATE_CHANGE<<24) | ((state&0xff)<<16) | ((w&0xff)<<8) | (h&0xff);
+}
+
+EVENT event_dice_vanish(int8_t w, int8_t h) {
+    return (ET_DICE_VANISH<<24) | ((w&0xff)<<8) | (h&0xff);
 }
 
 int event_type(EVENT event) {
@@ -30,6 +35,10 @@ int event_is_dice_state_change(EVENT event) {
     return ((event>>24) | ET_DICE_STATE_CHANGE) == ET_DICE_STATE_CHANGE;
 }
 
+int event_is_dice_vanish(EVENT event) {
+    return ((event>>24) | ET_DICE_VANISH) == ET_DICE_VANISH;
+}
+
 EVENT_PARAM_RET event_get_param(EVENT event) {
     EVENT_PARAM_RET null_ret;
     switch (event_type(event)) {
@@ -37,6 +46,8 @@ EVENT_PARAM_RET event_get_param(EVENT event) {
             return _event_get_param_move(event);
         case ET_DICE_STATE_CHANGE:
             return _event_get_param_dice_state_change(event);
+        case ET_DICE_VANISH:
+            return _event_get_param_dice_vanish(event);
     }
 
     null_ret.result_type = -1;
@@ -73,6 +84,20 @@ EVENT_PARAM_RET _event_get_param_dice_state_change(EVENT event) {
     ret.param.dice_state_change_param.state = state;
     ret.param.dice_state_change_param.w = w;
     ret.param.dice_state_change_param.h = h;
+
+    return ret;
+}
+
+EVENT_PARAM_RET _event_get_param_dice_vanish(EVENT event) {
+    int8_t w, h;
+    EVENT_PARAM_RET ret;
+
+    w = (event>>8) & 0xff;
+    h = event & 0xff;
+
+    ret.result_type = ET_DICE_VANISH;
+    ret.param.vanish_param.w = w;
+    ret.param.vanish_param.h = h;
 
     return ret;
 }

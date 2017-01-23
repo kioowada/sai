@@ -15,7 +15,7 @@ int _game_move_player(IGAME igame, EP_MOVE param);
 int _game_push_dice(IGAME igame, EP_MOVE param);
 int _game_roll_dice(IGAME igame, EP_MOVE param);
 int _game_ep_move_to_dir(EP_MOVE param);
-int _game_ignite_internal_event(IGAME igame);
+int _game_ignite_internal_event(IGAME igame, EVENT last_event);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -113,6 +113,7 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
 
 int _game_ignite_internal_event(IGAME igame, EVENT last_event) {
     // TODO
+    ELIST ignited_events = board_get_internal_events(igame->iboard, last_event);
     return 0;
 }
 

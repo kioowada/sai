@@ -30,9 +30,21 @@ typedef unsigned int EVENT;
  *  ssss ssss wwww wwww hhhh hhhh
  */
 
+#define ET_DICE_VANISH 3
+/*
+ * dice vanished completely
+ * [parameter]
+ *  xxxx xxxx wwww wwww hhhh hhhh
+ *  www/hhh: which position
+ */
+
 typedef struct {
     int8_t w, h;
 } EP_MOVE;
+
+typedef struct {
+    int8_t w, h;
+} EP_DICE_VANISH;
 
 typedef struct {
     unsigned char w, h, state;
@@ -43,16 +55,19 @@ typedef struct {
     union {
         EP_MOVE move_param;
         EP_DICE_STATE_CHANGE dice_state_change_param;
+        EP_DICE_VANISH vanish_param;
     } param;
 } EVENT_PARAM_RET;
 
 EVENT event_move(int8_t w, int8_t h);
 EVENT event_dice_state_change(int w, int h, int state);
+EVENT event_dice_vanish(int8_t w, int8_t h);
 
 int event_type(EVENT event);
 
 int event_is_move(EVENT event);
 int event_is_dice_state_change(EVENT event);
+int event_is_dice_vanish(EVENT event);
 
 EVENT_PARAM_RET event_get_param(EVENT event);
 

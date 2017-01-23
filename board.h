@@ -2,6 +2,7 @@
 #define __BOARD_H__
 
 #include "cell.h"
+#include "list.h"
 
 typedef unsigned int BOARD_TYPE;
 #define BT_NORMAL 1
@@ -23,6 +24,8 @@ IBOARD board_new(BOARD_TYPE type, int width, int height, CELL* initializer);
 
 int board_dice_exists(IBOARD iboard, int w, int h);
 CELL board_get_cell(IBOARD iboard, int w, int h);
+
+ELIST board_get_internal_events(IBOARD iboard, EVENT last_event);
 
 int board_push_dice(IBOARD iboard, int w, int h, int dir);
 int board_roll_dice(IBOARD iboard, int w, int h, int dir);

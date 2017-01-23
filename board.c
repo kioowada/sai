@@ -2,13 +2,23 @@
 #include "dice.h"
 #include "player.h" // for POINT
 
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #define INDEX(iboard, w, h) ((h) * ((iboard)->width + 2) + (w))
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// Exported Definition
+// Internal Types
+////////////////////////////////////////////////////////////////////////////////////////////
+typedef struct {
+    int top;
+    int length;
+    POINT points[0];
+} CONNECTION, *ICONNECTION;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Internal Declaration
 ////////////////////////////////////////////////////////////////////////////////////////////
 CELL _board_get_target_cell(IBOARD iboard, int w, int h, int dir);
 CELL _board_get_subject_cell(IBOARD iboard, int w, int h, int dir);
@@ -16,6 +26,14 @@ POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir);
 POINT _board_get_subject_point(IBOARD iboard, int w, int h, int dir);
 int _board_set_cell(IBOARD iboard, int w, int h, CELL cell);
 int _board_dir_to_dice_dir(int dir);
+
+
+unsigned char* _board_state_operation_new(IBOARD iboard);
+int _board_state_operation_is_changed(IBOARD iboard, unsigned char *so, int w, int h);
+int _board_state_operation_change(IBOARD iboard, unsigned char *so, int w, int h);
+void _board_state_operation_free(unsigned char *so);
+
+ICONNECTION _board_get_connection(IBOARD iboard, int w, int h);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
@@ -115,10 +133,102 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
 
     return -1;
 }
+
+// when last_event is
+//  - move, check dice connection around target or subject cell, and then do the state_change
+//      when target has a dice, then subject is empty
+//      when subject has a dice, then target is empty
+//  - state_change, no dice connection check is needed
+ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
+    int w, h;
+    ELIST elist = elist_new();
+    unsigned char *so = _board_state_operation_new(iboard);
+    CELL current_cell;
+    DICE current_dice;
+    int dice_state, i;
+    ICONNECTION iconn;
+
+    for (h = 1; h <= iboard->height; h++) {
+        for (w = 1; w <= iboard->width; w++) {
+            // if cell already updated, skip
+            // if cell == empty, skip
+            // if cell == existing dice, check connection
+            // if cell == vanishing dice, goto next state
+
+            if (_board_state_operation_is_changed(iboard, so, w, h)) {
+                continue;
+            }
+
+            current_cell = board_get_cell(iboard, w, h);
+            if (current_cell == CELL_EMPTY) {
+                continue;
+            }
+
+            if (dice_is_valid_dice((DICE)current_cell)) {
+                current_dice = (DICE)current_cell;
+                dice_state = dice_status(current_dice);
+                switch (dice_state) {
+                    case DS_SUBMERGED:
+                        // move to DS_GONE state
+                        elist_append(event_dice_state_change(w, h, DS_GONE), &elist);
+                        _board_state_operation_change(iboard, so, w, h);
+                        break;
+                    case DS_GONE:
+                        // move to EMPTY
+                        elist_append(event_dice_vanish(w, h), &elist);
+                        _board_state_operation_change(iboard, so, w, h);
+                        break;
+                    case DS_SOLID:
+                        // check connection
+                        iconn = _board_get_connection(iboard, w, h);
+                        if ((iconn->top != 1) && (iconn->length >= iconn->top)) {
+                            for (i = 0; i < iconn->length; i++) {
+                                elist_append(event_dice_state_change(iconn->points[i].w, iconn->points[i].h, DS_SUBMERGED), &elist);
+                                _board_state_operation_change(iboard, so, iconn->points[i].w, iconn->points[i].h);
+                            }
+                        }
+                        break;
+                }
+
+            }
+        }
+    }
+
+    _board_state_operation_free(so);
+    return elist;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
+    return NULL;
+}
+
+unsigned char* _board_state_operation_new(IBOARD iboard) {
+    unsigned char *ret;
+
+    ret = calloc((iboard->width + 2) * (iboard->height + 2), sizeof(unsigned char));
+
+    memset(ret, 0, (iboard->width + 2) * (iboard->height + 2) * sizeof(unsigned char));
+    return ret;
+}
+
+int _board_state_operation_is_changed(IBOARD iboard, unsigned char *so, int w, int h) {
+    return so[INDEX(iboard, w, h)] != 0;
+}
+
+int _board_state_operation_change(IBOARD iboard, unsigned char *so, int w, int h) {
+    so[INDEX(iboard, w, h)] = 1;
+    return 0;
+}
+
+void _board_state_operation_free(unsigned char *so) {
+    free(so);
+}
+
+// target: 進行方向 2 マス先
 CELL _board_get_target_cell(IBOARD iboard, int w, int h, int dir) {
     POINT target_point = _board_get_target_point(iboard, w, h, dir);
     return board_get_cell(iboard, target_point.w, target_point.h);
@@ -150,6 +260,7 @@ POINT _board_get_target_point(IBOARD iboard, int w, int h, int dir) {
     return ret;
 }
 
+// target: 進行方向 1 マス先
 POINT _board_get_subject_point(IBOARD iboard, int w, int h, int dir) {
     POINT ret;
     switch (dir) {
