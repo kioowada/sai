@@ -24,7 +24,7 @@ EVENT event_dice_vanish(int8_t w, int8_t h) {
 }
 
 int event_type(EVENT event) {
-    return event>>24 & 0xff;
+    return (event>>24) & 0xff;
 }
 
 int event_is_move(EVENT event) {

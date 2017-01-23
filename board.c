@@ -12,7 +12,6 @@
 // Internal Types
 ////////////////////////////////////////////////////////////////////////////////////////////
 typedef struct {
-    int dummy;
     int top;
     int length;
     POINT points[0];
@@ -221,7 +220,7 @@ ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
     memset(mask, 0, 256); // TODO
     top = dice_top((DICE)board_get_cell(iboard, w, h));
 
-    count = _board_do_get_connection(iboard, w, h, top, 0, mask);
+    count = _board_do_get_connection(iboard, w, h, top, 1, mask);
 
     iconn = (ICONNECTION)malloc(sizeof(CONNECTION) + sizeof(POINT) * count);
     printf("sizeof(CONNECTION)=%lu\n", sizeof(CONNECTION));
@@ -232,10 +231,8 @@ ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
         if (mask[i]) {
             printf("[%d,%d:%d]", count, mask[i], i);
             count--;
-            iconn->points[count].w = 181;
-            iconn->points[count].h = 222;
-//            iconn->points[count].w = i % (iboard->width + 2);
-//            iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
+            iconn->points[count].w = i % (iboard->width + 2);
+            iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
             printf("->(%d,%d)@%p\n", iconn->points[count].w, iconn->points[count].h, &iconn->points[count]);
         }
     }
