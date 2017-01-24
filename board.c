@@ -134,6 +134,9 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
     return -1;
 }
 
+int board_apply_event(IBOARD iboard, EVENT event) {
+}
+
 // when last_event is
 //  - move, check dice connection around target or subject cell, and then do the state_change
 //      when target has a dice, then subject is empty

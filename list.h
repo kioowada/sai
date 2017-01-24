@@ -23,5 +23,6 @@ int elist_concat(IELIST ielist1, IELIST ielist2);
 EVENT elist_nth(unsigned int n, IELIST ielist);
 /* get the n-th number. the first is counted as 0 */
 
+void elist_print(IELIST ielist);
 
 #endif /* __EVENT_LIST_H__ */

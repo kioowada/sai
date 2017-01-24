@@ -112,8 +112,17 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
 }
 
 int _game_ignite_internal_event(IGAME igame, EVENT last_event) {
-    // TODO
+    int i;
+    EVENT event;
     ELIST ignited_events = board_get_internal_events(igame->iboard, last_event);
+
+    for (i = 0; i < ignited_events.num; i++) {
+        event = elist_nth(i, &ignited_events);
+        board_apply_event(event);
+    }
+
+    elist_concat(&igame->elist, &ignited_events);
+
     return 0;
 }
 

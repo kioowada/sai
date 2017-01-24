@@ -1,5 +1,6 @@
 #include "list.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,12 +41,20 @@ EVENT elist_nth(unsigned int n, IELIST ielist) {
     return ielist->list[n];
 }
 
-void elist_print(ELIST elist) {
+int elist_concat(IELIST ielist1, IELIST ielist2) {
+    int i;
+    for (i = 0; i < ielist2->num; i++) {
+        elist_append(elist_nth(i, ielist2), ielist1);
+    }
+    return 0;
+}
+
+void elist_print(IELIST ielist) {
     int i;
     EVENT event;
 
-    for (i = 0; i < elist.num; i++) {
-        event = elist_nth(i, &elist);
+    for (i = 0; i < ielist->num; i++) {
+        event = elist_nth(i, ielist);
         printf("%d: 0x%08x\n", i, event);
     }
 }
