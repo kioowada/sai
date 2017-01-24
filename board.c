@@ -96,8 +96,6 @@ int board_push_dice(IBOARD iboard, int w, int h, int dir) {
     POINT target_point;
     POINT subject_point;
 
-    printf("push dice: %d,%d -> %d\n", w, h, dir);
-    printf("target_cell = 0x%08x, subject_dice = 0x%08x\n", target_cell, subject_dice);
     
     switch (target_cell) {
         case CELL_EMPTY:
@@ -156,16 +154,13 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
             // if cell == empty, skip
             // if cell == existing dice, check connection
             // if cell == vanishing dice, goto next state
-            printf("%d,%d,0x%08x\n", w, h, board_get_cell(iboard, w, h));
 
             if (_board_state_operation_is_changed(iboard, so, w, h)) {
-                printf(" do nothing because already changed\n");
                 continue;
             }
 
             current_cell = board_get_cell(iboard, w, h);
             if (current_cell == CELL_EMPTY) {
-                printf(" skip because empty\n");
                 continue;
             }
 
@@ -185,11 +180,7 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
                         break;
                     case DS_SOLID:
                         // check connection
-                        printf(" check connection\n");
                         iconn = _board_get_connection(iboard, w, h);
-                        printf(" iconn got:%p\n", iconn);
-                        printf("top=%d,length=%d\n", iconn->top, iconn->length);
-                        printf("%d,%d,%d,%d\n", iconn->points[0].w, iconn->points[0].h, iconn->points[1].w, iconn->points[1].h);
                         if ((iconn->top != 1) && (iconn->length >= iconn->top)) {
                             for (i = 0; i < iconn->length; i++) {
                                 elist_append(event_dice_state_change(iconn->points[i].w, iconn->points[i].h, DS_SUBMERGED), &elist);
@@ -223,20 +214,15 @@ ICONNECTION _board_get_connection(IBOARD iboard, int w, int h) {
     count = _board_do_get_connection(iboard, w, h, top, 1, mask);
 
     iconn = (ICONNECTION)malloc(sizeof(CONNECTION) + sizeof(POINT) * count);
-    printf("sizeof(CONNECTION)=%lu\n", sizeof(CONNECTION));
-    printf("malloced %lu\n", sizeof(CONNECTION) + sizeof(POINT) * count);
     iconn->length = count;
     iconn->top = top;
     for (i = 0; i < 256; i++) {
         if (mask[i]) {
-            printf("[%d,%d:%d]", count, mask[i], i);
             count--;
             iconn->points[count].w = i % (iboard->width + 2);
             iconn->points[count].h = (i - iconn->points[count].w) / (iboard->width + 2);
-            printf("->(%d,%d)@%p\n", iconn->points[count].w, iconn->points[count].h, &iconn->points[count]);
         }
     }
-    printf("length=%d,top=%d", iconn->length, iconn->top);
 
     free(mask);
     return iconn;
@@ -246,7 +232,6 @@ int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, un
     int dw, dh;
     CELL cell;
     DICE dice;
-    printf("  w=%d,h=%d,top=%d,count=%d\n", w, h, top, count);
 
     mask[INDEX(iboard, w, h)] = 1;
 
@@ -265,23 +250,18 @@ int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, un
 int _board_do_get_connection_impl(IBOARD iboard, int w, int h, int dw, int dh, int top, int count, unsigned char *mask) {
     CELL cell;
     DICE dice;
-    printf("   (%d,%d) mask=%d, cell=0x%08x\n", w + dw, h+ dh, mask[INDEX(iboard, w+dw,h+dh)], board_get_cell(iboard, w+dw, h+dh));
     if (mask[INDEX(iboard, w + dw, h + dh)]) {
-        printf("    skip because masked\n");
         return count;
     }
     cell = board_get_cell(iboard, w + dw, h + dh);
     switch (cell) {
         case CELL_EMPTY:
-            printf("    skip because empty\n");
             return count;
         case CELL_INVALID:
-            printf("    skip because invalid\n");
             return count;
         default:
             dice = (DICE)cell;
             if (!dice_is_valid_dice(dice)) {
-                printf("    skip because invalid dice\n");
                 return count;
             }
 
