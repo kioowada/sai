@@ -31,6 +31,10 @@ IGAME game_new(IBOARD iboard, PLAYER player) {
     return igame;
 }
 
+int game_is_end(IGAME igame) {
+    return !board_is_any_dice_alive(igame->iboard);
+}
+
 int game_commit_event(IGAME igame, EVENT event) {
     EVENT_PARAM_RET eparam;
     switch (event_type(event)) {

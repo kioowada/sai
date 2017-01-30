@@ -18,6 +18,8 @@ ELIST game_next_event_candidates(IGAME igame);
  * returned event_list SHOULD get freed when done using it.
  */
 
+int game_is_end(IGAME igame);
+
 int game_commit_event(IGAME igame, EVENT event);
 
 void game_print_status(IGAME igame);

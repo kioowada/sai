@@ -27,6 +27,8 @@ CELL board_get_cell(IBOARD iboard, int w, int h);
 
 ELIST board_get_internal_events(IBOARD iboard, EVENT last_event);
 
+int board_is_any_dice_alive(IBOARD iboard);
+
 int board_push_dice(IBOARD iboard, int w, int h, int dir);
 int board_roll_dice(IBOARD iboard, int w, int h, int dir);
 

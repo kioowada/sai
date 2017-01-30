@@ -73,6 +73,33 @@ int board_dice_exists(IBOARD iboard, int w, int h) {
     return dice_is_valid_dice(iboard->cell[INDEX(iboard, w, h)]);
 }
 
+int board_is_any_dice_alive(IBOARD iboard) {
+    int w, h;
+    CELL cell;
+    DICE dice;
+
+    for (h = 1; h <= iboard->height; h++) {
+        for (w = 1; w <= iboard->width; w++) {
+            cell = iboard->cell[INDEX(iboard, w, h)];
+            switch (cell) {
+                case CELL_EMPTY:
+                    continue;
+                case CELL_INVALID:
+                    continue;
+                default:
+                    dice = (DICE)cell;
+                    if (dice_status(dice) == DS_SOLID) {
+                        return 1;
+                    } else {
+                        continue;
+                    }
+            }
+        }
+    }
+
+    return 0;
+}
+
 CELL board_get_cell(IBOARD iboard, int w, int h) {
     return iboard->cell[INDEX(iboard, w, h)];
 }
@@ -135,6 +162,7 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
 }
 
 int board_apply_event(IBOARD iboard, EVENT event) {
+    return 0;
 }
 
 // when last_event is
