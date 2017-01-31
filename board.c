@@ -37,6 +37,9 @@ ICONNECTION _board_get_connection(IBOARD iboard, int w, int h);
 int _board_do_get_connection(IBOARD iboard, int w, int h, int top, int count, unsigned char *mask);
 int _board_do_get_connection_impl(IBOARD iboard, int w, int h, int dw, int dh, int top, int count, unsigned char *mask);
 
+int _board_apply_event_dice_vanish(IBOARD iboard, EVENT event);
+int _board_apply_event_dice_state_change(IBOARD iboard, EVENT event);
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Exported Definition
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +126,9 @@ int board_push_dice(IBOARD iboard, int w, int h, int dir) {
     POINT target_point;
     POINT subject_point;
 
+    if (dice_status(subject_dice) != DS_SOLID) {
+        return -1;
+    }
     
     switch (target_cell) {
         case CELL_EMPTY:
@@ -145,6 +151,10 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
     DICE current_dice = (DICE)board_get_cell(iboard, w, h); // FIXME
     POINT subject_point;
 
+    if (dice_status(current_dice) != DS_SOLID) {
+        return -1;
+    }
+
     switch (subject_cell) {
         case CELL_EMPTY:
             subject_point = _board_get_subject_point(iboard, w, h, dir);
@@ -161,7 +171,18 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
     return -1;
 }
 
+/* for now, ignore move events, and only support state_change and vanish */
 int board_apply_event(IBOARD iboard, EVENT event) {
+    switch(event_type(event)) {
+        case ET_MOVE:
+            break;
+        case ET_DICE_STATE_CHANGE:
+            _board_apply_event_dice_state_change(iboard, event);
+            break;
+        case ET_DICE_VANISH:
+            _board_apply_event_dice_vanish(iboard, event);
+            break;
+    }
     return 0;
 }
 
@@ -411,4 +432,12 @@ int _board_dir_to_dice_dir(int dir) {
             return DD_WEST;
     }
     return -1;
+}
+
+int _board_apply_event_dice_state_change(IBOARD iboard, EVENT event) {
+    return 0;
+}
+
+int _board_apply_event_dice_vanish(IBOARD iboard, EVENT event) {
+    return 0;
 }

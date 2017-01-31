@@ -7,8 +7,8 @@
 
 int main(void) {
     IBOARD iboard;
-//    CELL initializer[] = {dice(DT_NORMAL, 3, 5), CELL_EMPTY, CELL_EMPTY, dice(DT_NORMAL, 2, 1), CELL_EMPTY, CELL_EMPTY};
-    CELL initializer[] = {dice(DT_NORMAL, 3, 5), CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY};
+    CELL initializer[] = {dice(DT_NORMAL, 3, 5), CELL_EMPTY, CELL_EMPTY, dice(DT_NORMAL, 2, 1), CELL_EMPTY, CELL_EMPTY};
+//    CELL initializer[] = {dice(DT_NORMAL, 3, 5), CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY};
     PLAYER player;
     IGAME igame;
     ELIST elist;
