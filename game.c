@@ -122,7 +122,7 @@ int _game_ignite_internal_event(IGAME igame, EVENT last_event) {
 
     for (i = 0; i < ignited_events.num; i++) {
         event = elist_nth(i, &ignited_events);
-        board_apply_event(event);
+        board_apply_event(igame->iboard, event);
     }
 
     elist_concat(&igame->elist, &ignited_events);
@@ -136,7 +136,6 @@ CELL _game_get_move_target_cell(IGAME igame, EP_MOVE param) {
 }
 
 int _game_move_player(IGAME igame, EP_MOVE param) {
-    printf("moved: (%d,%d) + (%d,%d)\n", igame->player.w, igame->player.h, param.w, param.h);
     igame->player.w += param.w;
     igame->player.h += param.h;
     return 0;

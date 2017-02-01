@@ -105,6 +105,14 @@ int dice_status(DICE dice) {
     return (dice>>16)&0xf;
 }
 
+DICE dice_change_status(DICE dice, DICE_STATUS status) {
+    if (!_dice_is_valid_status(status)) {
+        return (DICE)-1;
+    }
+
+    return (dice&0xffff0fff) | (status<<16);
+}
+
 int dice_east(DICE dice) {
     return 7 - dice_west(dice);
 }

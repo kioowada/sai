@@ -73,6 +73,7 @@ int dice_west(DICE dice);
 int dice_east(DICE dice);
 
 int dice_status(DICE dice);
+DICE dice_change_status(DICE dice, DICE_STATUS status);
 
 int dice_rollable(DICE dice);
 int dice_pushable(DICE dice);

@@ -173,13 +173,16 @@ int board_roll_dice(IBOARD iboard, int w, int h, int dir) {
 
 /* for now, ignore move events, and only support state_change and vanish */
 int board_apply_event(IBOARD iboard, EVENT event) {
+    printf("trying to apply events: 0x%08x\n", event);
     switch(event_type(event)) {
-        case ET_MOVE:
+        case ET_PLAYER_MOVE:
             break;
         case ET_DICE_STATE_CHANGE:
+            printf("apply dice_state_change event: 0x%08x\n", event);
             _board_apply_event_dice_state_change(iboard, event);
             break;
         case ET_DICE_VANISH:
+            printf("apply dice_vanish event: 0x%08x\n", event);
             _board_apply_event_dice_vanish(iboard, event);
             break;
     }
@@ -435,9 +438,32 @@ int _board_dir_to_dice_dir(int dir) {
 }
 
 int _board_apply_event_dice_state_change(IBOARD iboard, EVENT event) {
+    EVENT_PARAM_RET eparam = event_get_param(event);
+    EP_DICE_STATE_CHANGE eparam_sc;
+    CELL cell;
+    DICE dice;
+
+    if (eparam.result_type != ET_DICE_STATE_CHANGE) {
+        return -1;
+    }
+
+    eparam_sc = eparam.param.dice_state_change_param;
+    cell = board_get_cell(iboard, eparam_sc.w, eparam_sc.h);
+    dice = (DICE)cell;
+    iboard->cell[INDEX(iboard, eparam_sc.w, eparam_sc.h)] = (CELL)dice_change_status(dice, eparam_sc.state);
+
     return 0;
 }
 
 int _board_apply_event_dice_vanish(IBOARD iboard, EVENT event) {
+    EVENT_PARAM_RET eparam = event_get_param(event);
+    EP_DICE_VANISH eparam_v;
+
+    if (eparam.result_type != ET_DICE_VANISH) {
+        return -1;
+    }
+
+    eparam_v = eparam.param.vanish_param;
+    iboard->cell[INDEX(iboard, eparam_v.w, eparam_v.h)] = CELL_EMPTY;
     return 0;
 }
