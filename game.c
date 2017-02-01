@@ -89,8 +89,9 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
                 case CELL_INVALID:
                     break;
                 default:
-                    _game_push_dice(igame, param);
-                    _game_move_player(igame, param);
+                    if(_game_push_dice(igame, param) == 0) {
+                        _game_move_player(igame, param);
+                    }
             }
             break;
         case CELL_INVALID:
@@ -101,8 +102,9 @@ int _game_commit_event_move(IGAME igame, EP_MOVE param) {
             target_cell = _game_get_move_target_cell(igame, param);
             switch (target_cell) {
                 case CELL_EMPTY:
-                    _game_roll_dice(igame, param);
-                    _game_move_player(igame, param);
+                    if (_game_roll_dice(igame, param) == 0) {
+                        _game_move_player(igame, param);
+                    }
                     break;
                 case CELL_INVALID:
                     break;
