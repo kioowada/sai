@@ -24,4 +24,7 @@ int game_commit_event(IGAME igame, EVENT event);
 
 void game_print_status(IGAME igame);
 
+ELIST game_get_available_events(IGAME igame);
+/* return list of events which can happen next */
+
 #endif /* __GAME_H__ */

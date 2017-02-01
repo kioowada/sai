@@ -3,6 +3,7 @@
 
 #include "cell.h"
 #include "list.h"
+#include "player.h"
 
 typedef unsigned int BOARD_TYPE;
 #define BT_NORMAL 1
@@ -26,6 +27,7 @@ int board_dice_exists(IBOARD iboard, int w, int h);
 CELL board_get_cell(IBOARD iboard, int w, int h);
 
 ELIST board_get_internal_events(IBOARD iboard, EVENT last_event);
+ELIST board_get_avaiable_dice_events(IBOARD iboard, PLAYER player);
 
 int board_is_any_dice_alive(IBOARD iboard);
 

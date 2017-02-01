@@ -253,6 +253,11 @@ ELIST board_get_internal_events(IBOARD iboard, EVENT last_event) {
     return elist;
 }
 
+// return rollable & pushable dice events from player
+ELIST board_get_avaiable_dice_events(IBOARD iboard, PLAYER player) {
+    return NULL;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Internal Definition
 ////////////////////////////////////////////////////////////////////////////////////////////

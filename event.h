@@ -16,6 +16,7 @@ typedef unsigned int EVENT;
 
 #define ET_PLAYER_MOVE       1
 /*
+ * DUPLICATED: MUST NOT USE ( I MEAN THIS IS USELESS)
  * player moved
  *
  * [parameter]
@@ -36,6 +37,22 @@ typedef unsigned int EVENT;
  * [parameter]
  *  xxxx xxxx wwww wwww hhhh hhhh
  *  www/hhh: which position
+ */
+
+#define ET_DICE_PUSH 4
+/*
+ * push dice
+ *
+ * [oarameter]
+ *  xxxx xxdd wwww wwww hhhh hhhh
+ */
+
+#define ET_DICE_ROLL 5
+/*
+ * roll dice
+ *
+ * [oarameter]
+ *  xxxx xxdd wwww wwww hhhh hhhh
  */
 
 typedef struct {
